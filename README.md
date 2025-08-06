@@ -1,3 +1,2 @@
-# Hebu_profile 😊
-
-[![Solved.ac Profile](http://mazassumnida.wtf/api/v2/generate_badge?boj=poetry100)](https://solved.ac/poetry100/)
+# Hebu_profile
+저는할줄아는게하나도업서요
