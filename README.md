@@ -1,2 +1,2 @@
 # Hebu_profile
-<- dumb
+hello, world!
