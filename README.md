@@ -1,10 +1,14 @@
-# Hebu_profile
-hello, world!
+<h1 align="center">Hebu_profile</h1>
+<p align="center">hello, world!</p>
 
-![Metrics](github-metrics.svg)
+<p align="center">
+  <img src="isocalendar.svg" alt="3D Contribution Calendar" />
+</p>
 
-![3D Contribution Calendar](isocalendar.svg)
+<p align="center">
+  <img src="github-metrics.svg" alt="Metrics" />
+</p>
 
-![Commit Streaks](calendar.svg)
-
-![Contributed Projects](notable.svg)
+<p align="center">
+  <img src="notable.svg" alt="Contributed Projects" />
+</p>
