@@ -65,7 +65,7 @@ jobs:
           base: ""
           config_timezone: Asia/Seoul
           plugin_notable: yes
-          plugin_notable_from: all
+          plugin_notable_from: user
           plugin_notable_types: commit
           plugin_notable_indepth: yes
           plugin_notable_repositories: yes
