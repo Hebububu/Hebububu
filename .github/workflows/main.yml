@@ -33,7 +33,7 @@ jobs:
           base: ""
           config_timezone: Asia/Seoul
           config_order: isocalendar, followup, languages, notable
-          repositories_affiliations: owner, organization_member
+          repositories_affiliations: owner, collaborator, organization_member
 
           # Contribution calendar
           plugin_isocalendar: yes
@@ -56,7 +56,6 @@ jobs:
           plugin_languages_sections: most-used
           plugin_languages_threshold: 0%
           plugin_languages_ignored: Java
-          plugin_languages_indepth: yes
 
           # Notable contributions (exclude org repos)
           plugin_notable: yes
