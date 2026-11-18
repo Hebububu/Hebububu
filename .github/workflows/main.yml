@@ -27,7 +27,7 @@ jobs:
           plugin_lines_sections: base
           filename: isocalendar.svg
 
-      # Column 2: Calendar + Issues/PRs status + Languages + Notable contributions
+      # Column 2: Calendar + Issues/PRs status + Notable contributions
       - name: Render metrics SVG
         uses: lowlighter/metrics@latest
         with:
@@ -36,7 +36,7 @@ jobs:
           template: classic
           base: ""
           config_timezone: Asia/Seoul
-          config_order: isocalendar, followup, languages, notable
+          config_order: isocalendar, followup, notable
           repositories_affiliations: owner, collaborator, organization_member
 
           # Contribution calendar
@@ -47,19 +47,6 @@ jobs:
           plugin_followup: yes
           plugin_followup_sections: repositories
           plugin_followup_indepth: yes
-
-          # Languages
-          plugin_languages: yes
-          plugin_languages_analysis_timeout: 15
-          plugin_languages_categories: markup, programming
-          plugin_languages_colors: github
-          plugin_languages_limit: 8
-          plugin_languages_recent_categories: markup, programming
-          plugin_languages_recent_days: 14
-          plugin_languages_recent_load: 300
-          plugin_languages_sections: most-used
-          plugin_languages_threshold: 0%
-          plugin_languages_ignored: Java, JavaScript, HTML, CSS
 
           # Notable contributions (exclude org repos)
           plugin_notable: yes
@@ -73,29 +60,26 @@ jobs:
           filename: github-metrics.svg
           output_action: none
 
-      - name: Validate language chart
-        shell: bash
-        run: |
-          if ! grep -Fq 'id="languages-bar"' /metrics_renders/github-metrics.svg; then
-            echo "::error::Most used languages chart is missing. Keeping the previous github-metrics.svg."
-            exit 1
-          fi
-          echo "Most used languages chart found."
-
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
 
-      - name: Publish validated metrics SVG
+      - name: Generate language ranking
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.METRICS_TOKEN }}
+        run: node .github/scripts/generate-language-stats.mjs "$GITHUB_REPOSITORY_OWNER"
+
+      - name: Publish metrics and language ranking
         shell: bash
         run: |
           cp /metrics_renders/github-metrics.svg github-metrics.svg
-          git add -- github-metrics.svg
+          git add -- github-metrics.svg languages.svg languages.md
           if git diff --cached --quiet; then
-            echo "github-metrics.svg is up to date."
+            echo "Metrics and language ranking are up to date."
             exit 0
           fi
           git -c user.name='github-actions[bot]' \
             -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
-            commit -m 'Update github-metrics.svg - [Skip GitHub Action]'
+            commit -m 'Update profile metrics and language ranking - [Skip GitHub Action]'
           git push origin "HEAD:$GITHUB_REF"

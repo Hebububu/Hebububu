@@ -8,6 +8,10 @@
     </td>
     <td align="center" valign="top">
       <img src="github-metrics.svg" alt="Metrics" />
+      <br />
+      <img src="languages.svg" alt="Most used languages by code size" />
+      <br />
+      <a href="languages.md">Full language ranking</a>
     </td>
   </tr>
 </table>
