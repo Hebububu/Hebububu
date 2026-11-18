@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { setTimeout as wait } from 'node:timers/promises';
 
 const pageSize = 25;
@@ -153,60 +153,75 @@ function renderRanking(ranking, total) {
   ].join('\n');
 }
 
-function renderCard(ranking, total) {
+function renderLanguageSection(ranking, total, width) {
   const entries = ranking.slice(0, 8);
   const remaining = ranking.slice(entries.length);
   if (remaining.length) {
     entries.push({ name: 'Other', size: remaining.reduce((sum, entry) => sum + entry.size, 0), color: '#8c959f' });
   }
-  const width = 480;
-  const padding = 20;
+  const padding = 13;
   const barWidth = width - padding * 2;
-  const height = 86 + 24 * Math.ceil(entries.length / 2);
+  const columnWidth = barWidth / 2;
+  const height = 50 + 20 * Math.ceil(entries.length / 2);
   let offset = 0;
   const segments = [];
   const labels = [];
   for (const [index, entry] of entries.entries()) {
     const segmentWidth = barWidth * entry.size / total;
     const color = /^#[0-9a-f]{6}$/i.test(entry.color) ? entry.color : '#64748b';
-    const x = padding + (index % 2) * 228;
-    const y = 86 + Math.floor(index / 2) * 24;
-    segments.push(`<rect x="${(padding + offset).toFixed(3)}" y="55" width="${segmentWidth.toFixed(3)}" height="8" fill="${color}"/>`);
-    labels.push(`<circle cx="${x + 5}" cy="${y - 4}" r="4" fill="${color}"/><text x="${x + 16}" y="${y}">${escapeMarkup(entry.name)}</text><text class="share" x="${x + 212}" y="${y}" text-anchor="end">${escapeMarkup(percentage(entry.size, total))}</text>`);
+    const x = padding + (index % 2) * columnWidth;
+    const y = 60 + Math.floor(index / 2) * 20;
+    segments.push(`<rect x="${(padding + offset).toFixed(3)}" y="34" width="${segmentWidth.toFixed(3)}" height="8" fill="${color}"/>`);
+    labels.push(`<circle cx="${x + 5}" cy="${y - 4}" r="4" fill="${color}"/><text x="${x + 16}" y="${y}">${escapeMarkup(entry.name)}</text><text class="language-share" x="${x + columnWidth - 12}" y="${y}" text-anchor="end">${escapeMarkup(percentage(entry.size, total))}</text>`);
     offset += segmentWidth;
   }
   const description = entries.map(entry => `${entry.name} ${percentage(entry.size, total)}`).join(', ');
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="title description">
-  <title id="title">Most used languages</title>
-  <desc id="description">${escapeMarkup(description)}</desc>
-  <style>
-    .card { fill: #fff; stroke: #d1d9e0; }
-    text { fill: #1f2328; font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    .title { font-size: 18px; font-weight: 600; }
-    .share { fill: #59636e; }
-    @media (prefers-color-scheme: dark) {
-      .card { fill: #0d1117; stroke: #3d444d; }
-      text { fill: #f0f6fc; }
-      .share { fill: #9198a1; }
-    }
-  </style>
-  <rect class="card" x=".5" y=".5" width="${width - 1}" height="${height - 1}" rx="6"/>
-  <text class="title" x="20" y="34">Most used languages</text>
-  <clipPath id="language-bar"><rect x="20" y="55" width="${barWidth}" height="8" rx="4"/></clipPath>
-  <g clip-path="url(#language-bar)">${segments.join('')}</g>
-  <g>${labels.join('')}</g>
-</svg>
-`;
+  const markup = `<section class="profile-languages">
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:block" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="profile-language-title profile-language-description">
+      <title id="profile-language-title">Most used languages</title>
+      <desc id="profile-language-description">${escapeMarkup(description)}</desc>
+      <style>
+        .profile-languages text { fill: #59636e; font-size: 13px; }
+        .profile-languages .language-heading { fill: #0366d6; font-size: 16px; }
+        @media (prefers-color-scheme: dark) {
+          .profile-languages text { fill: #9ca7b3; }
+          .profile-languages .language-heading { fill: #58a6ff; }
+        }
+      </style>
+      <path d="m19 15-5 4 5 4m5-8 5 4-5 4" fill="none" stroke="#959da5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <text class="language-heading" x="37" y="25">Most used languages</text>
+      <clipPath id="profile-language-bar"><rect x="${padding}" y="34" width="${barWidth}" height="8" rx="4"/></clipPath>
+      <g clip-path="url(#profile-language-bar)">${segments.join('')}</g>
+      <g>${labels.join('')}</g>
+    </svg>
+  </section>`;
+  return { markup, height };
 }
 
-const login = process.argv[2];
-if (!login) throw new Error('Usage: node .github/scripts/generate-language-stats.mjs <github-login>');
+function renderOverview(profile, ranking, total) {
+  const root = profile.match(/^<svg\b[^>]*>/)?.[0];
+  const width = Number(root?.match(/\bwidth="(\d+)"/)?.[1]);
+  const baseHeight = Number(root?.match(/\bheight="(\d+)"/)?.[1]);
+  const footer = /^[ \t]*<footer>/m;
+  if (!width || !baseHeight || !footer.test(profile) || profile.includes('profile-languages')) {
+    throw new Error('The Metrics profile SVG has an unexpected layout.');
+  }
+  const { markup, height } = renderLanguageSection(ranking, total, width);
+  return profile
+    .replace(root, () => root.replace(`height="${baseHeight}"`, `height="${baseHeight + height}"`))
+    .replace(footer, match => `            ${markup}\n${match}`);
+}
 
+const [login, profilePath] = process.argv.slice(2);
+if (!login || !profilePath) {
+  throw new Error('Usage: node .github/scripts/generate-language-stats.mjs <github-login> <metrics-profile-svg>');
+}
+const profile = await readFile(profilePath, 'utf8');
 const { ranking, repositoryCount } = await collectLanguageStats(login);
 const total = ranking.reduce((sum, entry) => sum + entry.size, 0);
 await Promise.all([
-  writeFile('languages.svg', renderCard(ranking, total)),
+  writeFile('profile-overview.svg', renderOverview(profile, ranking, total)),
   writeFile('languages.md', renderRanking(ranking, total)),
 ]);
 console.log(`Ranked ${ranking.length} languages from ${repositoryCount} eligible repositories. Java excluded.`);

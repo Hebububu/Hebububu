@@ -4,14 +4,12 @@
 <table>
   <tr>
     <td align="center" valign="top">
-      <img src="isocalendar.svg" alt="Profile" />
-    </td>
-    <td align="center" valign="top">
-      <img src="github-metrics.svg" alt="Metrics" />
-      <br />
-      <img src="languages.svg" alt="Most used languages by code size" />
+      <img src="profile-overview.svg" alt="Profile activity, repositories, and most used languages" />
       <br />
       <a href="languages.md">Full language ranking</a>
+    </td>
+    <td align="center" valign="top">
+      <img src="activity-overview.svg" alt="Contribution calendar, issues, pull requests, and notable contributions" />
     </td>
   </tr>
 </table>

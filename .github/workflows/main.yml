@@ -13,8 +13,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      # Column 1: Profile info
-      - uses: lowlighter/metrics@latest
+      - name: Render profile data
+        uses: lowlighter/metrics@latest
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           user: Hebububu
@@ -25,10 +25,10 @@ jobs:
           plugin_lines_history_limit: 1
           plugin_lines_repositories_limit: 4
           plugin_lines_sections: base
-          filename: isocalendar.svg
+          filename: profile-base.svg
+          output_action: none
 
-      # Column 2: Calendar + Issues/PRs status + Notable contributions
-      - name: Render metrics SVG
+      - name: Render contribution overview
         uses: lowlighter/metrics@latest
         with:
           token: ${{ secrets.METRICS_TOKEN }}
@@ -57,24 +57,24 @@ jobs:
           plugin_notable_filter: stars:>0
           plugin_notable_self: no
 
-          filename: github-metrics.svg
+          filename: activity-overview.svg
           output_action: none
 
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
 
-      - name: Generate language ranking
+      - name: Build profile overview and language ranking
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.METRICS_TOKEN }}
-        run: node .github/scripts/generate-language-stats.mjs "$GITHUB_REPOSITORY_OWNER"
+        run: node .github/scripts/generate-language-stats.mjs "$GITHUB_REPOSITORY_OWNER" /metrics_renders/profile-base.svg
 
-      - name: Publish metrics and language ranking
+      - name: Publish profile overviews and language ranking
         shell: bash
         run: |
-          cp /metrics_renders/github-metrics.svg github-metrics.svg
-          git add -- github-metrics.svg languages.svg languages.md
+          cp /metrics_renders/activity-overview.svg activity-overview.svg
+          git add -- profile-overview.svg activity-overview.svg languages.md
           if git diff --cached --quiet; then
             echo "Metrics and language ranking are up to date."
             exit 0
