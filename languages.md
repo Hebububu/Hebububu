@@ -1,27 +1,26 @@
 # Full language ranking
 
-Ranked by GitHub’s reported code bytes across eligible repositories. Java is excluded.
+Ranked by GitHub’s reported code bytes across eligible repositories. Java and JavaScript are excluded.
 
 | Rank | Language | Share |
 | ---: | --- | ---: |
-| 1 | JavaScript | 35.00% |
-| 2 | Rust | 26.16% |
-| 3 | TypeScript | 22.55% |
-| 4 | Vue | 6.39% |
-| 5 | Python | 3.67% |
-| 6 | HTML | 2.92% |
-| 7 | Svelte | 0.85% |
-| 8 | CSS | 0.85% |
-| 9 | Kotlin | 0.51% |
-| 10 | Shell | 0.39% |
-| 11 | Slint | 0.20% |
-| 12 | PLpgSQL | 0.15% |
-| 13 | HCL | 0.11% |
-| 14 | Dockerfile | 0.11% |
-| 15 | C# | 0.10% |
-| 16 | PowerShell | 0.02% |
-| 17 | Mermaid | &lt;0.01% |
-| 18 | WGSL | &lt;0.01% |
-| 19 | C++ | &lt;0.01% |
-| 20 | Mako | &lt;0.01% |
-| 21 | Swift | &lt;0.01% |
+| 1 | Rust | 40.24% |
+| 2 | TypeScript | 34.70% |
+| 3 | Vue | 9.83% |
+| 4 | Python | 5.64% |
+| 5 | HTML | 4.49% |
+| 6 | Svelte | 1.31% |
+| 7 | CSS | 1.31% |
+| 8 | Kotlin | 0.78% |
+| 9 | Shell | 0.59% |
+| 10 | Slint | 0.31% |
+| 11 | PLpgSQL | 0.23% |
+| 12 | HCL | 0.17% |
+| 13 | Dockerfile | 0.17% |
+| 14 | C# | 0.15% |
+| 15 | PowerShell | 0.03% |
+| 16 | Mermaid | &lt;0.01% |
+| 17 | WGSL | &lt;0.01% |
+| 18 | C++ | &lt;0.01% |
+| 19 | Mako | &lt;0.01% |
+| 20 | Swift | &lt;0.01% |
