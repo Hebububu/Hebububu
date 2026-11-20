@@ -3,7 +3,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { setTimeout as wait } from 'node:timers/promises';
 
 const pageSize = 25;
-const excludedLanguage = 'Java';
+const excludedLanguages = ['Java', 'JavaScript'];
 const repositoryAffiliations = 'OWNER, COLLABORATOR, ORGANIZATION_MEMBER';
 const languageFields = `
   totalCount
@@ -112,7 +112,7 @@ async function collectLanguageStats(login) {
       if (visitedRepositories.has(repository.id)) throw new Error('GitHub returned a duplicate repository.');
       visitedRepositories.add(repository.id);
       for (const { size, node: { name, color } } of await readRepositoryLanguages(repository)) {
-        if (name === excludedLanguage || size === 0) continue;
+        if (excludedLanguages.includes(name) || size === 0) continue;
         const entry = totals.get(name) ?? { name, size: 0, color: null };
         entry.size += size;
         entry.color ??= color;
@@ -144,7 +144,7 @@ function renderRanking(ranking, total) {
   return [
     '# Full language ranking',
     '',
-    'Ranked by GitHub’s reported code bytes across eligible repositories. Java is excluded.',
+    `Ranked by GitHub’s reported code bytes across eligible repositories. ${excludedLanguages.join(' and ')} are excluded.`,
     '',
     '| Rank | Language | Share |',
     '| ---: | --- | ---: |',
@@ -224,4 +224,4 @@ await Promise.all([
   writeFile('profile-overview.svg', renderOverview(profile, ranking, total)),
   writeFile('languages.md', renderRanking(ranking, total)),
 ]);
-console.log(`Ranked ${ranking.length} languages from ${repositoryCount} eligible repositories. Java excluded.`);
+console.log(`Ranked ${ranking.length} languages from ${repositoryCount} eligible repositories. Excluded: ${excludedLanguages.join(', ')}.`);
