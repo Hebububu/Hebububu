@@ -4,11 +4,11 @@ Ranked by GitHub’s reported code bytes across eligible repositories. Java and 
 
 | Rank | Language | Share |
 | ---: | --- | ---: |
-| 1 | Rust | 40.24% |
-| 2 | TypeScript | 34.70% |
-| 3 | Vue | 9.83% |
-| 4 | Python | 5.64% |
-| 5 | HTML | 4.49% |
+| 1 | Rust | 40.11% |
+| 2 | TypeScript | 34.91% |
+| 3 | Vue | 9.79% |
+| 4 | Python | 5.63% |
+| 5 | HTML | 4.47% |
 | 6 | Svelte | 1.31% |
 | 7 | CSS | 1.31% |
 | 8 | Kotlin | 0.78% |
